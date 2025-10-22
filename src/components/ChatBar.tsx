@@ -1,0 +1,69 @@
+import { Paperclip, Send, Smile } from 'lucide-react'
+import { Button } from './ui/button'
+import { Input } from './ui/input'
+import {useEffect, useRef, useState } from 'react'
+import type { SendMessage } from '@/hooks/useMessageHook'
+interface ChatBarProp {
+  onSubmit: (message: SendMessage) => void
+  onTyping?: () => void
+  onStopTyping?: () => void
+  conversationId: string
+  userId: string
+}
+
+export default function ChatBar({
+  onSubmit,
+  conversationId,
+  onTyping,
+  onStopTyping,
+}: ChatBarProp) {
+  const [message, setMessage] = useState<string>('')
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  const handleSubmit = () => {
+    if (!message) return
+    onSubmit({ conversationId, content: message })
+    setMessage('')
+  }
+  useEffect(() => {
+    if (!onTyping || !onStopTyping) return
+    if (message && inputRef.current?.focus) {
+      onTyping()
+    } else {
+      onStopTyping()
+    }
+  }, [message, onTyping, onStopTyping])
+
+  return (
+    <div className="flex w-full gap-2">
+      <div className="relative flex-grow">
+        <Input
+          ref={inputRef}
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          className="h-14 w-full rounded-full border-0 bg-[#303030] px-14 font-semibold shadow-2xl"
+          placeholder="Send"
+        />
+        <Button
+          variant="invisible"
+          className="group absolute top-1/2 left-2 -translate-y-1/2 rounded-full p-0"
+        >
+          <Smile className="size-5 text-gray-400 transition-colors group-hover:text-pink-300" />
+        </Button>
+        <Button
+          variant="invisible"
+          className="group absolute top-1/2 right-2 -translate-y-1/2 rounded-full p-0"
+        >
+          <Paperclip className="size-5 text-gray-400 transition-colors group-hover:text-pink-300" />
+        </Button>
+      </div>
+
+      <Button
+        className="h-14 w-14 rounded-full text-white hover:text-gray-300 focus-visible:ring-0"
+        onClick={handleSubmit}
+      >
+        <Send className="!size-5" />
+      </Button>
+    </div>
+  )
+}
