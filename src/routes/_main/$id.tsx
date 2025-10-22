@@ -14,6 +14,7 @@ import { useChatSocket, useJoinRoom } from '@/hooks/useSocket'
 import type { Message } from '@/interface/chat'
 import { useMessageHandler } from '@/hooks/useMessageHook'
 import { useAuth } from '@/store/useAuth'
+import { getConversationById } from '@/api/conversation_api'
 
 export const Route = createFileRoute('/_main/$id')({
   component: RouteComponent,
@@ -21,22 +22,14 @@ export const Route = createFileRoute('/_main/$id')({
     const { queryClient } = context
     const { id } = params
 
-    const conversationsData = queryClient.getQueryData<{
-      pages: ConversationsApiResponse[]
-      pageParams: unknown[]
-    }>(['conversations'])
+    const conversationsData = await getConversationById(id)
 
-    const allConversations =
-      conversationsData?.pages?.flatMap((page) => page.data || []) || []
-
-    const chat = allConversations.find((chat: any) => chat.id === id)
-
-    if (!chat) {
+    if (!conversationsData) {
       throw redirect({
         to: '/',
       })
     }
-    return chat
+    return conversationsData
   },
 })
 
@@ -108,7 +101,7 @@ function RouteComponent() {
     <div className="flex h-screen flex-col">
       <div className="bg-ui-secondary border-gray-500 text-white">
         <ChatHeader
-          avatarUrl={data?.image}
+          avatarUrl={data?.profileImage}
           name={data?.name}
           lastActive="2 hours ago"
         />
@@ -150,7 +143,6 @@ function RouteComponent() {
         <div className="mx-auto max-w-3xl">
           <ChatBar
             onSubmit={sendMessage}
-            userId={user?.id ?? ''}
             conversationId={param.id}
             onTyping={setTying}
             onStopTyping={removeTying}

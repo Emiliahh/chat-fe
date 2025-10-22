@@ -1,18 +1,20 @@
 import { Paperclip, Send, Smile } from 'lucide-react'
 import { Button } from './ui/button'
 import { Input } from './ui/input'
-import {useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { SendMessage } from '@/hooks/useMessageHook'
+
 interface ChatBarProp {
-  onSubmit: (message: SendMessage) => void
+  onSubmit?: (message: SendMessage) => void
+  onJustMessageSubmit?: (message: string) => void
   onTyping?: () => void
   onStopTyping?: () => void
-  conversationId: string
-  userId: string
+  conversationId?: string
 }
 
 export default function ChatBar({
   onSubmit,
+  onJustMessageSubmit,
   conversationId,
   onTyping,
   onStopTyping,
@@ -21,18 +23,32 @@ export default function ChatBar({
   const inputRef = useRef<HTMLInputElement>(null)
 
   const handleSubmit = () => {
-    if (!message) return
-    onSubmit({ conversationId, content: message })
+    if (!message.trim()) return
+
+    if (conversationId && onSubmit) {
+      onSubmit({ conversationId, content: message })
+    } else if (onJustMessageSubmit) {
+      onJustMessageSubmit(message)
+    }
+
     setMessage('')
   }
+
   useEffect(() => {
     if (!onTyping || !onStopTyping) return
-    if (message && inputRef.current?.focus) {
+    if (message) {
       onTyping()
     } else {
       onStopTyping()
     }
   }, [message, onTyping, onStopTyping])
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault()
+      handleSubmit()
+    }
+  }
 
   return (
     <div className="flex w-full gap-2">
@@ -41,8 +57,9 @@ export default function ChatBar({
           ref={inputRef}
           value={message}
           onChange={(e) => setMessage(e.target.value)}
+          onKeyDown={handleKeyDown}
           className="h-14 w-full rounded-full border-0 bg-[#303030] px-14 font-semibold shadow-2xl"
-          placeholder="Send"
+          placeholder="Send a message..."
         />
         <Button
           variant="invisible"

@@ -15,6 +15,7 @@ import { Route as AuthIndexRouteImport } from './routes/auth/index'
 import { Route as MainIndexRouteImport } from './routes/_main/index'
 import { Route as DemoTanstackQueryRouteImport } from './routes/demo.tanstack-query'
 import { Route as AuthRegisterRouteImport } from './routes/auth/register'
+import { Route as MainNewRouteImport } from './routes/_main/new'
 import { Route as MainIdRouteImport } from './routes/_main/$id'
 
 const AuthRouteRoute = AuthRouteRouteImport.update({
@@ -46,6 +47,11 @@ const AuthRegisterRoute = AuthRegisterRouteImport.update({
   path: '/register',
   getParentRoute: () => AuthRouteRoute,
 } as any)
+const MainNewRoute = MainNewRouteImport.update({
+  id: '/new',
+  path: '/new',
+  getParentRoute: () => MainRouteRoute,
+} as any)
 const MainIdRoute = MainIdRouteImport.update({
   id: '/$id',
   path: '/$id',
@@ -55,6 +61,7 @@ const MainIdRoute = MainIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/auth': typeof AuthRouteRouteWithChildren
   '/$id': typeof MainIdRoute
+  '/new': typeof MainNewRoute
   '/auth/register': typeof AuthRegisterRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
   '/': typeof MainIndexRoute
@@ -62,6 +69,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/$id': typeof MainIdRoute
+  '/new': typeof MainNewRoute
   '/auth/register': typeof AuthRegisterRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
   '/': typeof MainIndexRoute
@@ -72,6 +80,7 @@ export interface FileRoutesById {
   '/_main': typeof MainRouteRouteWithChildren
   '/auth': typeof AuthRouteRouteWithChildren
   '/_main/$id': typeof MainIdRoute
+  '/_main/new': typeof MainNewRoute
   '/auth/register': typeof AuthRegisterRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
   '/_main/': typeof MainIndexRoute
@@ -82,17 +91,25 @@ export interface FileRouteTypes {
   fullPaths:
     | '/auth'
     | '/$id'
+    | '/new'
     | '/auth/register'
     | '/demo/tanstack-query'
     | '/'
     | '/auth/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/$id' | '/auth/register' | '/demo/tanstack-query' | '/' | '/auth'
+  to:
+    | '/$id'
+    | '/new'
+    | '/auth/register'
+    | '/demo/tanstack-query'
+    | '/'
+    | '/auth'
   id:
     | '__root__'
     | '/_main'
     | '/auth'
     | '/_main/$id'
+    | '/_main/new'
     | '/auth/register'
     | '/demo/tanstack-query'
     | '/_main/'
@@ -149,6 +166,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRegisterRouteImport
       parentRoute: typeof AuthRouteRoute
     }
+    '/_main/new': {
+      id: '/_main/new'
+      path: '/new'
+      fullPath: '/new'
+      preLoaderRoute: typeof MainNewRouteImport
+      parentRoute: typeof MainRouteRoute
+    }
     '/_main/$id': {
       id: '/_main/$id'
       path: '/$id'
@@ -161,11 +185,13 @@ declare module '@tanstack/react-router' {
 
 interface MainRouteRouteChildren {
   MainIdRoute: typeof MainIdRoute
+  MainNewRoute: typeof MainNewRoute
   MainIndexRoute: typeof MainIndexRoute
 }
 
 const MainRouteRouteChildren: MainRouteRouteChildren = {
   MainIdRoute: MainIdRoute,
+  MainNewRoute: MainNewRoute,
   MainIndexRoute: MainIndexRoute,
 }
 

@@ -30,7 +30,6 @@ interface Conversation {
   type: 'private' | 'group'
   name: string
   image: string
-  participants: Participant[]
   lastMessage: LastMessage | null
   messageCount: number
   lastActivity: string // Could also be 'Date'
@@ -38,4 +37,11 @@ interface Conversation {
 export interface ConversationsApiResponse {
   data: Conversation[]
   pagination: Pagination
+}
+interface GenericPageResponse<T> {
+  data: T[]
+  pagination: Pagination
+}
+interface UserSearch extends User {
+  hasConversation: boolean
 }
