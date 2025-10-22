@@ -79,7 +79,7 @@ function RouteComponent() {
   }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage])
 
   const [displayMessage, setDisplayMessage] = useState<Message[]>([])
-  const { sendMessage, isTyping, setTypingStatus } = useMessageHandler(
+  const { sendMessage, setTypingStatus } = useMessageHandler(
     socket,
     setDisplayMessage,
   )
