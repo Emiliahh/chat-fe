@@ -35,7 +35,7 @@ export const Route = createFileRoute('/auth/')({
 function LoginComponent() {
   const navigate = Route.useNavigate()
   const [showPassword, setShowPassword] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading] = useState(false)
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
